@@ -18,6 +18,8 @@ public class TestModel {
 			count++;
 		}
 		
+		System.out.println(model.findMinimalSet());
+		
 	}
 
 }

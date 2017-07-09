@@ -2,8 +2,10 @@ package it.polito.tdp.gestionale.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jgrapht.Graphs;
 import org.jgrapht.UndirectedGraph;
@@ -99,6 +101,52 @@ public class Model {
 		}
 		
 		return statCorsi;
+		
+	}
+	
+	public List<Corso> findMinimalSet(){
+		
+		List<Corso> soluzioneParziale = new ArrayList<Corso>();
+		List<Corso> soluzioneMigliore = new ArrayList<Corso>();
+		
+		// senza condizione di terminazione, perché intrinseca
+		
+		recursive(soluzioneParziale, soluzioneMigliore);
+		
+		return soluzioneMigliore;
+		
+	}
+
+	private void recursive(List<Corso> soluzioneParziale, List<Corso> soluzioneMigliore) {
+
+		// System.out.println(soluzioneParziale);
+		
+		// cerco insieme minimo
+		
+		Set<Studente> setStudenti = new HashSet<Studente>(getTuttiStudenti());
+		
+		for(Corso c : soluzioneParziale){
+			setStudenti.removeAll(c.getStudenti());
+		}
+		
+		if(setStudenti.isEmpty()){
+			if(soluzioneMigliore.isEmpty())
+				soluzioneMigliore.addAll(soluzioneParziale);
+			if(soluzioneParziale.size()<soluzioneMigliore.size()){
+				soluzioneMigliore.clear();
+				soluzioneMigliore.addAll(soluzioneParziale);
+			}
+		}
+		
+		// creo nuova soluzione parziale
+		
+		for(Corso c : getTuttiCorsi()){
+			if(soluzioneParziale.isEmpty() || c.compareTo(soluzioneParziale.get(soluzioneParziale.size()-1))>0){
+				soluzioneParziale.add(c);
+				recursive(soluzioneParziale, soluzioneMigliore);
+				soluzioneParziale.remove(c);
+			}
+		}
 		
 	}
 	
